@@ -1,2 +1,4 @@
 variables*.yml
 variables.yml
+inventory.yml
+ansible.log
