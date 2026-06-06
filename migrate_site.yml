@@ -33,7 +33,7 @@
         state: present
         user: "{{ hostvars.localhost.source.user }}"
         key: "{{ lookup('file', '/tmp/remote_id_ssh_rsa.pub') }}"
-    - apt: name=python-mysqldb update_cache=yes state=present
+    - command: apt install python3-mysqldb
       become: true
     - name: "Activer le mode proxy"
       apache2_module: state=present name=proxy_http
@@ -64,9 +64,9 @@
         state: present
         user: "{{ hostvars.localhost.target.user }}"
         key: "{{ lookup('file', '/tmp/remote_id_ssh_rsa.pub') }}"
-    - apt: name=python-mysqldb update_cache=yes state=present
+    - command: apt install python3-mysqldb
       become: true
-    - apt: name=sshpass update_cache=yes state=present
+    - command: apt install sshpass
       become: true
     - include: tasks/get_path.yml
       vars:
