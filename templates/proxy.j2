@@ -12,6 +12,7 @@
 </VirtualHost>
 
 {% if hostvars.localhost.source.ssl is defined %}
+<IfModule mod_ssl.c>
 <VirtualHost *:443>
         ServerName {{ hostvars.localhost.source.domain }}
 {% if hostvars.localhost.source.alias is defined %}
@@ -41,4 +42,5 @@
         ProxyPass / https://{{ hostvars.localhost.target.host }}/
         ProxyPassReverse / https://{{ hostvars.localhost.target.host }}/
 </VirtualHost>
+</IfModule>
 {% endif %}
