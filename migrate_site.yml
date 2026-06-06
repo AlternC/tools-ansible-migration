@@ -42,7 +42,7 @@
     - name: "Activer le mode proxy"
       apache2_module: state=present name=proxy_http
       when: hostvars.localhost.source.proxy|default(1)|bool
-    - include: tasks/get_path.yml
+    - ansible.builtin.include_tasks: tasks/get_path.yml
       vars:
         domain: "{{ hostvars.localhost.source.domain }}"
         alternc_user: "{{ hostvars.localhost.source.alternc }}"
@@ -72,7 +72,7 @@
       become: true
     - command: apt install sshpass
       become: true
-    - include: tasks/get_path.yml
+    - ansible.builtin.include_tasks: tasks/get_path.yml
       vars:
         domain: "{{ hostvars.localhost.source.domain }}"
         alternc_user: "{{ hostvars.localhost.target.alternc|default(hostvars.localhost.source.alternc) }}"
