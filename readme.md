@@ -1,22 +1,23 @@
-# Ansible script to migrate website to Alternc server
+# Ansible script to migrate websites to an AlternC server
 
+This script provides an Ansible playbook to migrate any website hosted on AlternC, Ubuntu, or Debian to a standard AlternC server.
 
-This script provide a huge ansible script to move any website (hosted on alternc, ubuntu, debian) to a standard alternc server.
+## Migrate between two AlternC servers
 
-## Migrate between two alternc servers
+Before launching a migration, you must define a `variables.yml` file.
+An optional `inventory.yml` can also be defined if a default configuration must be applied to one or more AlternC servers.
+The `script` command is not mandatory, but it is useful for reviewing the full process afterwards with ```less -r ansible.log```.
 
-Betfote to launch a migration you must set a *variables.yml* file
+```script -c "ansible-playbook migrate_site.yml -i inventory.yml" ansible.log```
 
-**ansible-playbook migrate_site.yml**
-
-A simple *variable.yml* file could be set as :
+A minimalist `variables.yml` file could be defined as:
 
     ---
     source:
         domain: www.domain.tld
         cms: wordpress
         host: old.alternc.tld
-        user: ssh_acccount
+        user: ssh_account
         key: /home/my/.ssh/id_rsa
         path: /var/www/[...]/www/mywebsite/
         database:
@@ -32,10 +33,39 @@ A simple *variable.yml* file could be set as :
         database:
             pass: "new_database_pass"
 
-In this sample, we want migrate a worpdress with a new database to same altenrc account.
+This example provides a WordPress migration from the `old.alternc.tld` server to the `new.alternc.tld` server.
+The domain associated with the CMS is `www.domain.tld`, without any aliases.
+SSH connections are established to both servers using the same account `ssh_account` and the same `key`.
+The AlternC account is identical on both servers.
 
+### Inventory usage
 
-## Migrate full option variables
+Ansible requires [Python >= 3.9](https://docs.ansible.com/projects/ansible/latest/reference_appendices/python_3_support.html) on each server.
+To use a compatible version on older Debian releases such as Buster, we suggest using `pyenv` and then installing at least Python 3.11.2.
+`inventory.yml` is required to define the Python interpreter path, because Ansible autodiscovery may not handle this properly in some cases.
+
+If the source host `source.server.tld` has a version of Python that is too old, you can run:
+
+```bash
+curl -fsSL https://pyenv.run | bash
+apt install make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev curl git libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+apt-get install python3-dev default-libmysqlclient-dev build-essential pkg-config
+pyenv install 3.11.2
+pyenv local 3.11.2
+python -V
+pip install mysqlclient
+```
+
+Local python installation must be ran by ssh_account used in `variables.yml`
+
+In your `inventory.yml` file:
+
+    ungrouped:
+        hosts:
+            source.server.tld:
+                ansible_python_interpreter: "[/home/ssh_account]/.pyenv/versions/3.11.2/bin/python"
+
+## Full migration options
 
     ---
     source:
@@ -47,7 +77,7 @@ In this sample, we want migrate a worpdress with a new database to same altenrc 
         #proxy: false|true (default true)
         host: old.alternc.tld
         #port: 2121
-        user: ssh_acccount
+        user: ssh_account
         pass: anypassword
         key: /home/my/.ssh/id_rsa
         path: /any/absolute/path/on/server
