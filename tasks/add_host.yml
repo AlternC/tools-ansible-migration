@@ -1,8 +1,10 @@
 ---
+##Deconnecter les sessions actives et ignorer les erreurs
 - name: "Deconnecter les sessions ssh de {{ server.host }}"
   local_action: >
-      shell ssh -O stop {{ server.host }}
+      shell ssh -q -O stop {{ server.host }}
       -o ControlPath=/tmp/ansible-ssh-{{ server.user | default("root") }}-{{ server.host }}-{{ server.port | default(22) }}
+      ||true
   run_once: yes
   ignore_errors: yes
 - name: "Ajouter le serveur {{ server.host }} dans l'inventaire"
